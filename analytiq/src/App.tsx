@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 type Page = 
   | 'Dashboard' 
@@ -153,7 +153,7 @@ const Icons = {
 };
 
 export default function App() {
- const [_isAuthenticated, setIsAuthenticated] = useState<boolean>(true);
+  const { user } = useAuth();
   const [userName, setUserName] = useState<string>('Zacharia M.');
   const [userRole, setUserRole] = useState<UserRole>('CEO');
   const [companyName, setCompanyName] = useState<string>('Analytiq Global E.A');
@@ -189,7 +189,7 @@ export default function App() {
     { id: '5', name: 'Ujenzi wa API ya Supabase Gateway', department: 'Mifumo', progress: 15, status: 'Imechelewa', manager: 'Zacharia M.', budget: 95000 }
   ]);
 
-  const [customers] = useState<Customer[]>([]);
+  const [customers] = useState([]);
     { id: 'C1', name: 'Tanzania Mining Corp', sector: 'Madini', value: 450000, health: 'Salama', churnRisk: 12 },
     { id: 'C2', name: 'Kilimanjaro Agro Exports', sector: 'Kilimo', value: 380000, health: 'Salama', churnRisk: 8 },
     { id: 'C3', name: 'Lake Victoria Logistics', sector: 'Usafirishaji', value: 290000, health: 'Kawaida', churnRisk: 35 },
@@ -237,8 +237,8 @@ export default function App() {
   const simulatedFixedOverhead = 540000 + (hiringAdj * 5500) + (marketingAdj * 1800) + (baseInventory * 0.04 * inventoryHoldingCostMultiplier);
   
   const simulatedProfit = simulatedRevenue - simulatedCOGS - simulatedFixedOverhead;
-  const _simulatedCashFlow = Math.round(baseCashFlow + (simulatedProfit - latestProfit) * 0.85 - (hiringAdj > 0 ? hiringAdj * 2500 : 0));
-const _simulatedRetention = Math.min(100, Math.max(30, 92 - (priceAdj * 0.7) + (marketingAdj * 0.09)));
+  const _simulatedCashFlow = Math.round(...);
+  const _simulatedRetention = Math.min(...);
   const riskIndex = Math.min(100, Math.max(0, Math.round(10 + (priceAdj > 12 ? 35 : 0) + (hiringAdj > 20 ? 30 : 0) + (simulatedProfit < 100000 ? 25 : 0))));
   const confidenceScore = Math.min(99, Math.max(50, Math.round(96 - Math.abs(priceAdj) * 0.6 - Math.abs(productionAdj) * 0.4)));
 
@@ -557,7 +557,7 @@ const _simulatedRetention = Math.min(100, Math.max(30, 92 - (priceAdj * 0.7) + (
 
                 <div className="h-64 flex items-end justify-between px-4 bg-slate-50/60 rounded-xl pt-6 overflow-x-auto">
                   {salesRecords.map((item) => (
-  <div>{item.name}</div>
+  {salesRecords.map((item) => (
 ))}
                     const maxVal = 2000000;
                     const heightRevenue = (item.revenue / maxVal) * 100;
