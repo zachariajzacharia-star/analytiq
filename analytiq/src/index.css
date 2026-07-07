@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-navy: #0F172A;
+  --color-brand-accent: #1E3A8A;
+  --color-brand-grayBg: #F8FAFC;
+  --color-brand-grayText: #64748B;
+  --color-brand-cardBg: #FFFFFF;
+}
+
+body {
+  background-color: var(--color-brand-grayBg);
+  color: var(--color-brand-navy);
+  font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+  letter-spacing: -0.01em;
+}
