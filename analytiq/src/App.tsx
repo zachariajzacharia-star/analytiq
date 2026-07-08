@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 
 type Page = 
   | 'Dashboard' 
@@ -159,7 +159,6 @@ export default function App() {
   const [currentPage, setCurrentPage] = useState<Page>('Dashboard');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
 
-  // Custom Toast/Snackbar Notification States for non-disruptive feedback
   const [toasts, setToasts] = useState<Array<{ id: string; message: string; type: 'success' | 'warning' | 'info' }>>([]);
 
   const triggerToast = (message: string, type: 'success' | 'warning' | 'info' = 'success') => {
@@ -170,7 +169,6 @@ export default function App() {
     }, 4000);
   };
 
-  // State arrays populated with interactive executive records
   const [salesRecords, setSalesRecords] = useState<SalesRecord[]>([
     { id: '1', month: 'Januari', revenue: 1200000, profit: 310000, region: 'Kusini', sector: 'Mining' },
     { id: '2', month: 'Februari', revenue: 1250000, profit: 340000, region: 'Kusini', sector: 'Agriculture' },
@@ -188,7 +186,7 @@ export default function App() {
     { id: '5', name: 'Ujenzi wa API ya Supabase Gateway', department: 'Mifumo', progress: 15, status: 'Imechelewa', manager: 'Zacharia M.', budget: 95000 }
   ]);
 
-  const [customers] = useState([]);
+  const [customers] = useState<Customer[]>([
     { id: 'C1', name: 'Tanzania Mining Corp', sector: 'Madini', value: 450000, health: 'Salama', churnRisk: 12 },
     { id: 'C2', name: 'Kilimanjaro Agro Exports', sector: 'Kilimo', value: 380000, health: 'Salama', churnRisk: 8 },
     { id: 'C3', name: 'Lake Victoria Logistics', sector: 'Usafirishaji', value: 290000, health: 'Kawaida', churnRisk: 35 },
@@ -200,18 +198,15 @@ export default function App() {
     { id: 'S1', timestamp: 'Jana saa 16:30', priceAdj: 5, marketingAdj: 20, hiringAdj: 2, projectedRevenue: 1720000, projectedProfit: 545000, riskIndex: 15 }
   ]);
 
-  // Form states for creating records interactively
   const [newSale, setNewSale] = useState({ month: 'Julai', revenue: '', profit: '', region: 'Kusini', sector: 'Telecom' });
   const [newProject, setNewProject] = useState({ name: '', department: 'Mauzo', progress: 0, status: 'Kwenye Mpango' as const, manager: '', budget: '' });
 
-  // Strategic Decision Lab controls
-  const [priceAdj, setPriceAdj] = useState<number>(0);         // -30% to +30%
-  const [marketingAdj, setMarketingAdj] = useState<number>(0); // -50% to +100%
-  const [hiringAdj, setHiringAdj] = useState<number>(0);       // -20 to +50 Employees
-  const [productionAdj, setProductionAdj] = useState<number>(0); // -40% to +40%
-  const [inventoryAdj, setInventoryAdj] = useState<number>(0);   // -50% to +50%
+  const [priceAdj, setPriceAdj] = useState<number>(0);
+  const [marketingAdj, setMarketingAdj] = useState<number>(0);
+  const [hiringAdj, setHiringAdj] = useState<number>(0);
+  const [productionAdj, setProductionAdj] = useState<number>(0);
+  const [inventoryAdj, setInventoryAdj] = useState<number>(0);
 
-  // Dynamic totals that change when sales are added or modified
   const baseRevenue = useMemo(() => salesRecords.reduce((acc, curr) => acc + curr.revenue, 0) / salesRecords.length, [salesRecords]);
   const baseProfit = useMemo(() => salesRecords.reduce((acc, curr) => acc + curr.profit, 0) / salesRecords.length, [salesRecords]);
   const latestRevenue = useMemo(() => salesRecords[salesRecords.length - 1]?.revenue || 1650000, [salesRecords]);
@@ -219,27 +214,28 @@ export default function App() {
   const totalEnterpriseBudget = useMemo(() => projects.reduce((acc, curr) => acc + curr.budget, 0), [projects]);
 
   const baseDemand = 12000;
-  const baseCashFlow = 620000;
   const baseInventory = 350000;
 
-  // Linear Programming business intelligence coefficients
-  const elasticityOfDemand = -1.8; 
+  const elasticityOfDemand = -1.8;
   const priceMultiplier = 1 + (priceAdj / 100);
   const demandFromPrice = Math.max(0.2, 1 + (priceAdj / 100) * elasticityOfDemand);
   const demandFromMarketing = 1 + Math.log1p(Math.max(0, marketingAdj / 100)) * 0.5;
-  
+
   const simulatedDemand = Math.round(baseDemand * demandFromPrice * demandFromMarketing);
   const simulatedRevenue = Math.round(simulatedDemand * (137.5 * priceMultiplier));
-  
+
   const inventoryHoldingCostMultiplier = 1 - (inventoryAdj / 100) * 0.25;
-  const simulatedCOGS = simulatedDemand * 82 * (1 - (productionAdj / 100) * 0.08); 
+  const simulatedCOGS = simulatedDemand * 82 * (1 - (productionAdj / 100) * 0.08);
   const simulatedFixedOverhead = 540000 + (hiringAdj * 5500) + (marketingAdj * 1800) + (baseInventory * 0.04 * inventoryHoldingCostMultiplier);
-  
+
   const simulatedProfit = simulatedRevenue - simulatedCOGS - simulatedFixedOverhead;
-  const _simulatedCashFlow = Math.round(...);
-  const _simulatedRetention = Math.min(...);
-  const riskIndex = Math.min(100, Math.max(0, Math.round(10 + (priceAdj > 12 ? 35 : 0) + (hiringAdj > 20 ? 30 : 0) + (simulatedProfit < 100000 ? 25 : 0))));
   const confidenceScore = Math.min(99, Math.max(50, Math.round(96 - Math.abs(priceAdj) * 0.6 - Math.abs(productionAdj) * 0.4)));
+  const riskIndex = Math.min(95, Math.max(5, Math.round(
+    Math.abs(priceAdj) * 0.8 +
+    Math.abs(marketingAdj) * 0.3 +
+    Math.abs(hiringAdj) * 0.5 +
+    Math.abs(productionAdj) * 0.4
+  )));
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(val);
@@ -247,32 +243,16 @@ export default function App() {
 
   const applyPreset = (preset: 'growth' | 'cost_cut' | 'defensive' | 'reset') => {
     if (preset === 'growth') {
-      setPriceAdj(-5);
-      setMarketingAdj(60);
-      setHiringAdj(15);
-      setProductionAdj(30);
-      setInventoryAdj(20);
+      setPriceAdj(-5); setMarketingAdj(60); setHiringAdj(15); setProductionAdj(30); setInventoryAdj(20);
       triggerToast('Mkakati wa Ukuaji wa Haraka umewashwa', 'success');
     } else if (preset === 'cost_cut') {
-      setPriceAdj(10);
-      setMarketingAdj(-40);
-      setHiringAdj(-10);
-      setProductionAdj(-15);
-      setInventoryAdj(-30);
+      setPriceAdj(10); setMarketingAdj(-40); setHiringAdj(-10); setProductionAdj(-15); setInventoryAdj(-30);
       triggerToast('Mkakati wa Kupunguza Gharama umewashwa', 'warning');
     } else if (preset === 'defensive') {
-      setPriceAdj(5);
-      setMarketingAdj(15);
-      setHiringAdj(2);
-      setProductionAdj(5);
-      setInventoryAdj(-5);
+      setPriceAdj(5); setMarketingAdj(15); setHiringAdj(2); setProductionAdj(5); setInventoryAdj(-5);
       triggerToast('Mkakati wa Kujihami umechaguliwa', 'info');
     } else {
-      setPriceAdj(0);
-      setMarketingAdj(0);
-      setHiringAdj(0);
-      setProductionAdj(0);
-      setInventoryAdj(0);
+      setPriceAdj(0); setMarketingAdj(0); setHiringAdj(0); setProductionAdj(0); setInventoryAdj(0);
       triggerToast('Mkakati umerudishwa kama kawaida');
     }
   };
@@ -280,10 +260,8 @@ export default function App() {
   const handleSaveScenario = () => {
     const scenario: SavedScenario = {
       id: 'S' + (savedScenarios.length + 1),
-      timestamp: `Leo saa ${new Date().toLocaleTimeString('sw-TZ', {hour: '2-digit', minute:'2-digit'})}`,
-      priceAdj,
-      marketingAdj,
-      hiringAdj,
+      timestamp: `Leo saa ${new Date().toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit' })}`,
+      priceAdj, marketingAdj, hiringAdj,
       projectedRevenue: simulatedRevenue,
       projectedProfit: simulatedProfit,
       riskIndex
@@ -300,38 +278,31 @@ export default function App() {
   const handleAiAsk = (customQuery?: string) => {
     const query = customQuery || aiQuery;
     if (!query.trim()) return;
-
     const newHistory = [...chatHistory, { sender: 'user' as const, text: query }];
     setChatHistory(newHistory);
     setAiQuery('');
-
     setTimeout(() => {
       let aiText = '';
       let showChart = false;
       let chartName = '';
-
       const lq = query.toLowerCase();
       if (lq.includes('profit') || lq.includes('faida') || lq.includes('mwenendo')) {
         aiText = `Kulingana na data za sasa, Wastani wa Mapato ya Mwezi ni ${formatCurrency(baseRevenue)} huku faida ya wastani ikiwa ${formatCurrency(baseProfit)}. Ukijaribu Strategic Lab hivi sasa, unatarajia kupata Faida iliyokadiriwa ya ${formatCurrency(simulatedProfit)} kwa mwezi ujao kutokana na mabadiliko yako ya bei (${priceAdj}%).`;
-        showChart = true;
-        chartName = 'profitDrop';
+        showChart = true; chartName = 'profitDrop';
       } else if (lq.includes('customer') || lq.includes('wateja') || lq.includes('sekta')) {
         aiText = "Sekta inayojiri mzunguko mkubwa zaidi wa fedha ni Sekta ya Madini (Mining Sector), ikifuatiwa na Agriculture. Mteja mkubwa zaidi kwa sasa ni Tanzania Mining Corp ($450,000). Tuna tahadhari kubwa kwa Serengeti Hospitality Group ($180,000) yenye Churn Risk ya 72%.";
-        showChart = true;
-        chartName = 'bestCustomers';
+        showChart = true; chartName = 'bestCustomers';
       } else if (lq.includes('mradi') || lq.includes('project')) {
         aiText = `Hivi sasa tunasimamia miradi ${projects.length} yenye bajeti ya jumla ya ${formatCurrency(totalEnterpriseBudget)}. Mradi unaoongoza kwa asilimia kubwa ni Tathmini ya HR (${projects.find(p => p.id === '4')?.manager}), huku ujenzi wa API ya Supabase ukiwa umeteleza kwa siku kadhaa.`;
       } else if (lq.includes('mkakati') || lq.includes('simul')) {
         aiText = `Mkakati ulioweka sasa unaleta Mapato yaliyokadiriwa ya ${formatCurrency(simulatedRevenue)} na faida ya ${formatCurrency(simulatedProfit)}. Kiwango chako cha hatari kiko asilimia ${riskIndex}%. Ushauri wa AI: ${simulatedProfit < 0 ? 'Mkakati huu una hasara, tafadhali punguza kuajiri au ongeza ufanisi wa uzalishaji.' : 'Mseto huu ni imara na unaweza kutekelezeka.'}`;
       } else {
-        aiText = `Nimepata swali lako. Kwenye mfumo wetu salama wa ${companyName}, Zacharia anaongoza jopo hili kwa mafanikio. Kwa sasa jopo lote lipo 'synchronized' kikamilifu na Supabase Database na PostgreSql server.`;
+        aiText = `Nimepata swali lako. Kwenye mfumo wetu salama wa ${companyName}, Zacharia anaongoza jopo hili kwa mafanikio. Kwa sasa jopo lote lipo synchronized kikamilifu na Supabase Database na PostgreSQL server.`;
       }
-
       setChatHistory([...newHistory, { sender: 'ai', text: aiText, hasChart: showChart, chartType: chartName }]);
     }, 850);
   };
 
-  // Notification management states
   const [notifications, setNotifications] = useState<Array<{ id: string; title: string; desc: string; type: 'warning' | 'info' | 'critical'; read: boolean; date: string }>>([
     { id: '1', title: 'Tahadhari ya Kupoteza Mteja', desc: 'Serengeti Hospitality Group ina hatari kubwa ya Churn Risk (72%)', type: 'critical', read: false, date: 'Muda huu' },
     { id: '2', title: 'Stoo Imepitiliza (Overstock)', desc: 'Bidhaa za Category B zimejaa kwa 95% katika stoo kuu ya Kusini', type: 'warning', read: false, date: 'Masaa 2 yaliyopita' },
@@ -390,30 +361,27 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-[#0F172A] flex font-sans antialiased relative">
-      
-      {/* REAL-TIME TOAST OVERLAYS */}
+
+      {/* TOAST OVERLAYS */}
       <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full">
         {toasts.map(toast => (
-          <div 
-            key={toast.id} 
-            className={`p-4 rounded-2xl shadow-xl flex items-center justify-between border transition-all duration-300 animate-slide-in ${
+          <div
+            key={toast.id}
+            className={`p-4 rounded-2xl shadow-xl flex items-center justify-between border transition-all duration-300 ${
               toast.type === 'success' ? 'bg-emerald-950/90 border-emerald-800 text-emerald-300' :
               toast.type === 'warning' ? 'bg-rose-950/90 border-rose-900 text-rose-300' :
               'bg-[#0B192C]/90 border-slate-700 text-slate-100'
             }`}
           >
             <span className="text-xs font-semibold">{toast.message}</span>
-            <button 
-              onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} 
-              className="ml-3 text-[10px] uppercase font-bold tracking-wider opacity-70 hover:opacity-100"
-            >
+            <button onClick={() => setToasts(prev => prev.filter(t => t.id !== toast.id))} className="ml-3 text-[10px] uppercase font-bold tracking-wider opacity-70 hover:opacity-100">
               Funga
             </button>
           </div>
         ))}
       </div>
 
-      {/* MOBILE HEADER BUTTON */}
+      {/* MOBILE HEADER */}
       <div className="md:hidden fixed top-0 left-0 right-0 bg-[#0B192C] text-white p-4 flex justify-between items-center z-50 shadow-md">
         <div className="flex items-center space-x-2.5">
           <AnalytiqLogo className="w-8 h-8" />
@@ -427,22 +395,19 @@ export default function App() {
         </button>
       </div>
 
-      {/* SIDEBAR NAVIGATION PANEL */}
+      {/* SIDEBAR */}
       <aside className={`fixed top-0 bottom-0 left-0 z-40 w-64 bg-[#0B192C] text-white flex flex-col justify-between transition-transform duration-300 ease-in-out md:translate-x-0 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} pt-16 md:pt-0`}>
         <div>
-          {/* Sidebar Header */}
           <div className="p-6 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <AnalytiqLogo className="w-10 h-10 shrink-0" />
               <div>
                 <h1 className="text-lg font-black tracking-tight text-white leading-none">ANALYTIQ</h1>
-                <p className="text-[8px] text-emerald-400 font-mono uppercase tracking-wider mt-1 font-extrabold leading-none">
-                  Precision in Every Data Point
-                </p>
+                <p className="text-[8px] text-emerald-400 font-mono uppercase tracking-wider mt-1 font-extrabold leading-none">Precision in Every Data Point</p>
               </div>
             </div>
           </div>
-          
+
           <nav className="p-4 space-y-1 overflow-y-auto max-h-[75vh]">
             {[
               { name: 'Dashboard', page: 'Dashboard', icon: <Icons.Dashboard /> },
@@ -460,20 +425,12 @@ export default function App() {
             ].map((item) => (
               <button
                 key={item.page}
-                onClick={() => {
-                  setCurrentPage(item.page as Page);
-                  setMobileMenuOpen(false);
-                }}
+                onClick={() => { setCurrentPage(item.page as Page); setMobileMenuOpen(false); }}
                 className={`w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all ${
-                  currentPage === item.page
-                    ? 'bg-emerald-500 text-[#0B192C] shadow-lg shadow-emerald-500/20'
-                    : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
+                  currentPage === item.page ? 'bg-emerald-500 text-[#0B192C] shadow-lg shadow-emerald-500/20' : 'text-slate-400 hover:bg-slate-800/60 hover:text-white'
                 }`}
               >
-                <div className="flex items-center space-x-3">
-                  {item.icon}
-                  <span>{item.name}</span>
-                </div>
+                <div className="flex items-center space-x-3">{item.icon}<span>{item.name}</span></div>
                 {item.count && item.count > 0 ? (
                   <span className="bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">{item.count}</span>
                 ) : null}
@@ -482,7 +439,6 @@ export default function App() {
           </nav>
         </div>
 
-        {/* Profile Footer Panel */}
         <div className="p-4 border-t border-slate-800 bg-[#061120] flex items-center justify-between">
           <div className="flex items-center space-x-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-400 to-cyan-400 flex items-center justify-center text-xs font-black text-slate-900">
@@ -493,7 +449,10 @@ export default function App() {
               <p className="text-[10px] text-slate-400 mt-1">Sajili: {userRole}</p>
             </div>
           </div>
-          <button onClick={() => { setIsAuthenticated(false); triggerToast('Umetoka kwenye mfumo kwa usalama', 'info'); }} className="text-slate-400 hover:text-rose-400 p-1">
+          <button
+            onClick={() => triggerToast('Umetoka kwenye mfumo kwa usalama', 'info')}
+            className="text-slate-400 hover:text-rose-400 p-1"
+          >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
@@ -501,10 +460,9 @@ export default function App() {
         </div>
       </aside>
 
-      {/* MAIN MAIN CONTENT CONTAINER */}
+      {/* MAIN CONTENT */}
       <main className="flex-1 md:ml-64 p-4 md:p-10 pt-20 md:pt-10 min-h-screen">
-        
-        {/* Global top navigation bar status */}
+
         <header className="flex flex-col md:flex-row md:justify-between md:items-center mb-8 pb-5 border-b border-slate-200">
           <div>
             <div className="flex items-center space-x-3">
@@ -521,15 +479,14 @@ export default function App() {
           </div>
         </header>
 
-        {/* 1. DASHBOARD PAGE */}
+        {/* DASHBOARD */}
         {currentPage === 'Dashboard' && (
           <div className="space-y-8">
-            {/* Top Stat Metrics Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 { label: 'Wastani wa Mapato (Avg Revenue)', value: formatCurrency(baseRevenue), desc: 'Inategemea mauzo ya mwisho', color: 'text-emerald-600' },
-                { label: 'Wastani wa Faida (Avg Profit)', value: formatCurrency(baseProfit), desc: `Nguvu ya soko kwa sasa`, color: 'text-emerald-600' },
-                { label: 'Mapato ya Hivi Karibuni', value: formatCurrency(latestRevenue), desc: `Kutoka mwezi wa mwisho`, color: 'text-emerald-600' },
+                { label: 'Wastani wa Faida (Avg Profit)', value: formatCurrency(baseProfit), desc: 'Nguvu ya soko kwa sasa', color: 'text-emerald-600' },
+                { label: 'Mapato ya Hivi Karibuni', value: formatCurrency(latestRevenue), desc: 'Kutoka mwezi wa mwisho', color: 'text-emerald-600' },
                 { label: 'Miradi Inayoendelea', value: `${projects.filter(p => p.status === 'Inaendelea').length} Active`, desc: `${projects.length} kwa jumla`, color: 'text-amber-500' }
               ].map((stat, i) => (
                 <div key={i} className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition duration-200">
@@ -542,10 +499,7 @@ export default function App() {
               ))}
             </div>
 
-            {/* Core Analytical Layout Block */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
-              {/* Revenue/Profit Monthly Bar Chart via Inline SVG */}
               <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
                   <div>
@@ -553,31 +507,20 @@ export default function App() {
                     <p className="text-[11px] text-slate-400">Mapato (Kijani) vs Faida (Navy) - Jumla ya Rekodi {salesRecords.length}</p>
                   </div>
                 </div>
-
                 <div className="h-64 flex items-end justify-between px-4 bg-slate-50/60 rounded-xl pt-6 overflow-x-auto">
-                  {salesRecords.map((item) => (
-  {salesRecords.map((item) => (
-))}
+                  {salesRecords.map((item) => {
                     const maxVal = 2000000;
                     const heightRevenue = (item.revenue / maxVal) * 100;
                     const heightProfit = (item.profit / maxVal) * 100;
                     return (
                       <div key={item.id} className="flex flex-col items-center space-y-2 min-w-[70px] w-1/6">
                         <div className="flex items-end space-x-1.5 h-40">
-                          {/* Revenue column */}
-                          <div 
-                            style={{ height: `${heightRevenue}%` }} 
-                            className="w-4 sm:w-6 bg-emerald-500 rounded-t-md transition-all duration-300 hover:opacity-80 relative group cursor-pointer"
-                          >
+                          <div style={{ height: `${heightRevenue}%` }} className="w-4 sm:w-6 bg-emerald-500 rounded-t-md transition-all duration-300 hover:opacity-80 relative group cursor-pointer">
                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 bg-[#0B192C] text-white text-[9px] font-mono p-1 rounded opacity-0 group-hover:opacity-100 transition z-10 pointer-events-none whitespace-nowrap">
                               Rev: {formatCurrency(item.revenue)}
                             </div>
                           </div>
-                          {/* Profit column */}
-                          <div 
-                            style={{ height: `${heightProfit}%` }} 
-                            className="w-4 sm:w-6 bg-[#0B192C] rounded-t-md transition-all duration-300 hover:opacity-80 relative group cursor-pointer"
-                          >
+                          <div style={{ height: `${heightProfit}%` }} className="w-4 sm:w-6 bg-[#0B192C] rounded-t-md transition-all duration-300 hover:opacity-80 relative group cursor-pointer">
                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-1 bg-[#0B192C] text-white text-[9px] font-mono p-1 rounded opacity-0 group-hover:opacity-100 transition z-10 pointer-events-none whitespace-nowrap">
                               Prf: {formatCurrency(item.profit)}
                             </div>
@@ -590,10 +533,8 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Departmental Performance Scores */}
               <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-5">
                 <h4 className="font-extrabold text-[#0B192C] text-sm">Ufanisi wa Idara (KPI Score)</h4>
-                
                 <div className="space-y-4">
                   {[
                     { dept: 'Mauzo & Usambazaji', score: '88%', color: 'bg-emerald-500' },
@@ -612,14 +553,12 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-
                 <div className="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-100 text-xs leading-relaxed text-slate-500">
                   ⚡ <b>Wazo la Siku:</b> Seva ya Kaskazini inaonesha upotevu wa 6% wa tija ya POS. Inapendekezwa kuanzisha mchakato wa API Sync haraka.
                 </div>
               </div>
             </div>
 
-            {/* AI Insights & Alerts Center */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-slate-900 text-white p-6 rounded-3xl border border-slate-800 flex flex-col justify-between">
                 <div>
@@ -642,9 +581,7 @@ export default function App() {
                         <p className="font-bold text-[#0B192C]">{n.title}</p>
                         <p className="text-slate-400 text-[11px] mt-0.5">{n.desc}</p>
                       </div>
-                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                        n.type === 'critical' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'
-                      }`}>
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${n.type === 'critical' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}`}>
                         {n.type}
                       </span>
                     </div>
@@ -652,11 +589,10 @@ export default function App() {
                 </div>
               </div>
             </div>
-
           </div>
         )}
 
-        {/* 2. SALES PAGE */}
+        {/* SALES */}
         {currentPage === 'Sales' && (
           <div className="space-y-8">
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -665,56 +601,30 @@ export default function App() {
                 <p className="text-xs text-slate-400 mt-0.5">Ulinganishaji wa mauzo mwezi hadi mwezi na mfumo wa uingizaji data</p>
               </div>
               <div className="flex gap-2 text-xs font-semibold">
-                <span className="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg font-mono font-bold">
-                  Wastani: {formatCurrency(baseRevenue)}
-                </span>
+                <span className="bg-emerald-100 text-emerald-800 px-3 py-1.5 rounded-lg font-mono font-bold">Wastani: {formatCurrency(baseRevenue)}</span>
               </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
-              {/* Add New Sale Form */}
               <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm h-fit">
                 <h4 className="font-bold text-sm text-[#0B192C] mb-4">Sajili Mauzo Mapya (Real-Time Entry)</h4>
                 <form onSubmit={handleAddSale} className="space-y-4 text-xs">
                   <div>
                     <label className="block text-slate-500 mb-1">Mwezi / Kipindi</label>
-                    <input 
-                      type="text" 
-                      value={newSale.month}
-                      onChange={(e) => setNewSale(prev => ({ ...prev, month: e.target.value }))}
-                      className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-                      placeholder="e.g. Julai" 
-                    />
+                    <input type="text" value={newSale.month} onChange={(e) => setNewSale(prev => ({ ...prev, month: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="e.g. Julai" />
                   </div>
                   <div>
                     <label className="block text-slate-500 mb-1">Mapato ya Jumla ($)</label>
-                    <input 
-                      type="number" 
-                      value={newSale.revenue}
-                      onChange={(e) => setNewSale(prev => ({ ...prev, revenue: e.target.value }))}
-                      className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-                      placeholder="e.g. 1500000" 
-                    />
+                    <input type="number" value={newSale.revenue} onChange={(e) => setNewSale(prev => ({ ...prev, revenue: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="e.g. 1500000" />
                   </div>
                   <div>
                     <label className="block text-slate-500 mb-1">Faida iliyopatikana ($)</label>
-                    <input 
-                      type="number" 
-                      value={newSale.profit}
-                      onChange={(e) => setNewSale(prev => ({ ...prev, profit: e.target.value }))}
-                      className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-                      placeholder="e.g. 400000" 
-                    />
+                    <input type="number" value={newSale.profit} onChange={(e) => setNewSale(prev => ({ ...prev, profit: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="e.g. 400000" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-slate-500 mb-1">Kanda (Region)</label>
-                      <select 
-                        value={newSale.region}
-                        onChange={(e) => setNewSale(prev => ({ ...prev, region: e.target.value }))}
-                        className="w-full px-3.5 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                      >
+                      <select value={newSale.region} onChange={(e) => setNewSale(prev => ({ ...prev, region: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500">
                         <option value="Kusini">Kusini</option>
                         <option value="Ziwa">Ziwa</option>
                         <option value="Kati">Kati</option>
@@ -723,11 +633,7 @@ export default function App() {
                     </div>
                     <div>
                       <label className="block text-slate-500 mb-1">Sekta (Sector)</label>
-                      <select 
-                        value={newSale.sector}
-                        onChange={(e) => setNewSale(prev => ({ ...prev, sector: e.target.value }))}
-                        className="w-full px-3.5 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                      >
+                      <select value={newSale.sector} onChange={(e) => setNewSale(prev => ({ ...prev, sector: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500">
                         <option value="Mining">Mining</option>
                         <option value="Telecom">Telecom</option>
                         <option value="Agriculture">Agriculture</option>
@@ -735,13 +641,10 @@ export default function App() {
                       </select>
                     </div>
                   </div>
-                  <button type="submit" className="w-full py-2.5 bg-[#0B192C] text-white rounded-xl font-bold hover:bg-slate-800 transition">
-                    Sajili na Unganisha
-                  </button>
+                  <button type="submit" className="w-full py-2.5 bg-[#0B192C] text-white rounded-xl font-bold hover:bg-slate-800 transition">Sajili na Unganisha</button>
                 </form>
               </div>
 
-              {/* Current Ledger Table */}
               <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm overflow-hidden">
                 <h4 className="font-bold text-sm text-[#0B192C] mb-4">Hati ya Mauzo Salama (Database Mirror)</h4>
                 <div className="overflow-x-auto">
@@ -771,12 +674,11 @@ export default function App() {
                   </table>
                 </div>
               </div>
-
             </div>
           </div>
         )}
 
-        {/* 3. FINANCE PAGE */}
+        {/* FINANCE */}
         {currentPage === 'Finance' && (
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -795,7 +697,6 @@ export default function App() {
 
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
               <h4 className="font-extrabold text-[#0B192C] text-sm">Income Statement Summary Simulator</h4>
-              
               <div className="space-y-4">
                 {[
                   { item: 'Mapato ya Ghafi (Gross Revenue)', value: latestRevenue, pct: 100, color: 'bg-emerald-500' },
@@ -818,7 +719,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 4. CUSTOMERS PAGE */}
+        {/* CUSTOMERS */}
         {currentPage === 'Customers' && (
           <div className="space-y-8">
             <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
@@ -827,14 +728,10 @@ export default function App() {
                   <h4 className="font-bold text-sm text-[#0B192C]">Wateja Wakubwa na Thamani zao (Active Key Accounts)</h4>
                   <p className="text-xs text-slate-400 mt-1">Ushirikishwaji na viwango vya Churn Risk kwa mwezi huu</p>
                 </div>
-                <button 
-                  onClick={() => triggerToast('Supabase Customer List imeunganishwa upya na PostgreSQL', 'info')}
-                  className="px-4 py-2 border border-slate-200 text-[#0B192C] font-bold rounded-xl text-xs hover:bg-slate-50"
-                >
+                <button onClick={() => triggerToast('Supabase Customer List imeunganishwa upya na PostgreSQL', 'info')} className="px-4 py-2 border border-slate-200 text-[#0B192C] font-bold rounded-xl text-xs hover:bg-slate-50">
                   Soma upya (Force Reload)
                 </button>
               </div>
-
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                   <thead>
@@ -857,9 +754,7 @@ export default function App() {
                           <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                             c.health === 'Salama' ? 'bg-emerald-100 text-emerald-800' :
                             c.health === 'Kawaida' ? 'bg-amber-100 text-amber-800' : 'bg-rose-100 text-rose-800'
-                          }`}>
-                            {c.health}
-                          </span>
+                          }`}>{c.health}</span>
                         </td>
                         <td className="p-4">
                           <div className="flex items-center space-x-2">
@@ -879,7 +774,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 5. HR & PRODUCTIVITY PAGE */}
+        {/* HR */}
         {currentPage === 'HR' && (
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -899,7 +794,6 @@ export default function App() {
                 <p className="text-xs text-slate-500 mt-1">Muda unaotumika kuanza hadi kuingizwa kazini</p>
               </div>
             </div>
-
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-4">
               <h4 className="font-bold text-sm text-[#0B192C]">Kujenga Vipaji na Mpango wa Ajira</h4>
               <p className="text-xs text-slate-400">Mipango ya sasa ya miradi na uwezo wa timu kufanya kazi kwa ufanisi mkubwa.</p>
@@ -910,7 +804,7 @@ export default function App() {
           </div>
         )}
 
-        {/* 6. INVENTORY & ABC PAGE */}
+        {/* INVENTORY */}
         {currentPage === 'Inventory' && (
           <div className="space-y-8">
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
@@ -918,7 +812,6 @@ export default function App() {
                 <h4 className="font-bold text-sm text-[#0B192C]">Tathmini ya ABC ya Stoo (Inventory Categorization)</h4>
                 <p className="text-xs text-slate-400 mt-0.5">Uchambuzi wa thamani dhidi ya uendeshaji mwezi huu</p>
               </div>
-
               <div className="space-y-4">
                 {[
                   { cat: 'Category A (Fast Moving - 70% Value)', rate: 'Normal Stock Levels', color: 'bg-emerald-500', pct: 85 },
@@ -940,34 +833,21 @@ export default function App() {
           </div>
         )}
 
-        {/* 7. PROJECTS PAGE */}
+        {/* PROJECTS */}
         {currentPage === 'Projects' && (
           <div className="space-y-8">
-            
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
-              {/* Form to add a new project */}
               <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm h-fit">
                 <h4 className="font-bold text-sm text-[#0B192C] mb-4">Sajili Mradi Mpya (Visual Gantt Entry)</h4>
                 <form onSubmit={handleAddProject} className="space-y-4 text-xs">
                   <div>
                     <label className="block text-slate-500 mb-1">Jina la Mradi</label>
-                    <input 
-                      type="text" 
-                      value={newProject.name}
-                      onChange={(e) => setNewProject(prev => ({ ...prev, name: e.target.value }))}
-                      className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-                      placeholder="e.g. API Gateway V2" 
-                    />
+                    <input type="text" value={newProject.name} onChange={(e) => setNewProject(prev => ({ ...prev, name: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="e.g. API Gateway V2" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-slate-500 mb-1">Idara</label>
-                      <select 
-                        value={newProject.department}
-                        onChange={(e) => setNewProject(prev => ({ ...prev, department: e.target.value }))}
-                        className="w-full px-3.5 py-2 border border-slate-200 rounded-xl bg-white"
-                      >
+                      <select value={newProject.department} onChange={(e) => setNewProject(prev => ({ ...prev, department: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl bg-white">
                         <option value="Mauzo">Mauzo</option>
                         <option value="Inventory">Inventory</option>
                         <option value="Marketing">Marketing</option>
@@ -977,43 +857,21 @@ export default function App() {
                     </div>
                     <div>
                       <label className="block text-slate-500 mb-1">Bajeti ($)</label>
-                      <input 
-                        type="number" 
-                        value={newProject.budget}
-                        onChange={(e) => setNewProject(prev => ({ ...prev, budget: e.target.value }))}
-                        className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-                        placeholder="e.g. 50000" 
-                      />
+                      <input type="number" value={newProject.budget} onChange={(e) => setNewProject(prev => ({ ...prev, budget: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="e.g. 50000" />
                     </div>
                   </div>
                   <div>
                     <label className="block text-slate-500 mb-1">Msimamizi wa Mradi</label>
-                    <input 
-                      type="text" 
-                      value={newProject.manager}
-                      onChange={(e) => setNewProject(prev => ({ ...prev, manager: e.target.value }))}
-                      className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-                      placeholder="Jina la Msimamizi" 
-                    />
+                    <input type="text" value={newProject.manager} onChange={(e) => setNewProject(prev => ({ ...prev, manager: e.target.value }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" placeholder="Jina la Msimamizi" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-slate-500 mb-1">Ufanisi / Progress (%)</label>
-                      <input 
-                        type="number" 
-                        min="0" max="100"
-                        value={newProject.progress}
-                        onChange={(e) => setNewProject(prev => ({ ...prev, progress: Number(e.target.value) }))}
-                        className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" 
-                      />
+                      <label className="block text-slate-500 mb-1">Progress (%)</label>
+                      <input type="number" min="0" max="100" value={newProject.progress} onChange={(e) => setNewProject(prev => ({ ...prev, progress: Number(e.target.value) }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-1 focus:ring-emerald-500" />
                     </div>
                     <div>
                       <label className="block text-slate-500 mb-1">Hali (Status)</label>
-                      <select 
-                        value={newProject.status}
-                        onChange={(e) => setNewProject(prev => ({ ...prev, status: e.target.value as any }))}
-                        className="w-full px-3.5 py-2 border border-slate-200 rounded-xl bg-white"
-                      >
+                      <select value={newProject.status} onChange={(e) => setNewProject(prev => ({ ...prev, status: e.target.value as Project['status'] }))} className="w-full px-3.5 py-2 border border-slate-200 rounded-xl bg-white">
                         <option value="Kwenye Mpango">Kwenye Mpango</option>
                         <option value="Inaendelea">Inaendelea</option>
                         <option value="Imekamilika">Imekamilika</option>
@@ -1021,13 +879,10 @@ export default function App() {
                       </select>
                     </div>
                   </div>
-                  <button type="submit" className="w-full py-2.5 bg-[#0B192C] text-white rounded-xl font-bold hover:bg-slate-800 transition">
-                    Ongeza Mradi
-                  </button>
+                  <button type="submit" className="w-full py-2.5 bg-[#0B192C] text-white rounded-xl font-bold hover:bg-slate-800 transition">Ongeza Mradi</button>
                 </form>
               </div>
 
-              {/* Gantt / Project list visualization */}
               <div className="lg:col-span-2 bg-white rounded-3xl border border-slate-100 p-6 shadow-sm">
                 <div className="flex justify-between items-center mb-6">
                   <div>
@@ -1035,7 +890,6 @@ export default function App() {
                     <p className="text-xs text-slate-400 mt-0.5">Bajeti kamili ya miradi: {formatCurrency(totalEnterpriseBudget)}</p>
                   </div>
                 </div>
-
                 <div className="space-y-6">
                   {projects.map((p) => (
                     <div key={p.id} className="grid grid-cols-1 md:grid-cols-4 gap-4 items-center border-b border-slate-50 pb-4 last:border-0 last:pb-0">
@@ -1055,32 +909,25 @@ export default function App() {
                         <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                           p.status === 'Imekamilika' ? 'bg-emerald-100 text-emerald-800' :
                           p.status === 'Imechelewa' ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {p.status}
-                        </span>
+                        }`}>{p.status}</span>
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-
             </div>
           </div>
         )}
 
-        {/* 8. DECISION LAB */}
+        {/* DECISION LAB */}
         {currentPage === 'Decision Lab' && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              
-              {/* Policy Control Sliders Panel */}
               <div className="lg:col-span-1 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm space-y-6">
                 <div className="border-b border-slate-100 pb-3">
                   <h4 className="font-bold text-sm text-[#0B192C]">Strategic Policy Controls</h4>
                   <p className="text-xs text-slate-400 mt-0.5">Jaribu vigezo mbalimbali kubaini mwenendo bora</p>
                 </div>
-
-                {/* Slider 1 */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-bold text-slate-700">
                     <label>Mabadiliko ya Bei (Price Adj)</label>
@@ -1088,8 +935,6 @@ export default function App() {
                   </div>
                   <input type="range" min="-30" max="30" step="5" value={priceAdj} onChange={(e) => setPriceAdj(Number(e.target.value))} className="w-full accent-emerald-500 cursor-pointer" />
                 </div>
-
-                {/* Slider 2 */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-bold text-slate-700">
                     <label>Bajeti ya Masoko (Marketing)</label>
@@ -1097,8 +942,6 @@ export default function App() {
                   </div>
                   <input type="range" min="-50" max="100" step="10" value={marketingAdj} onChange={(e) => setMarketingAdj(Number(e.target.value))} className="w-full accent-emerald-500 cursor-pointer" />
                 </div>
-
-                {/* Slider 3 */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs font-bold text-slate-700">
                     <label>Ajira Mpya (Hiring)</label>
@@ -1106,23 +949,18 @@ export default function App() {
                   </div>
                   <input type="range" min="-20" max="50" step="1" value={hiringAdj} onChange={(e) => setHiringAdj(Number(e.target.value))} className="w-full accent-emerald-500 cursor-pointer" />
                 </div>
-
-                {/* Quick Preset Buttons */}
                 <div className="pt-4 border-t border-slate-100 space-y-2.5">
                   <p className="text-[10px] font-mono uppercase text-slate-400 font-bold">Mbinu za Haraka za Kibiashara</p>
                   <div className="grid grid-cols-2 gap-2 text-[10px] font-bold">
-                    <button type="button" onClick={() => applyPreset('growth')} className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 p-2.5 rounded-xl border border-emerald-100">Kukua kwa Kasi (Growth)</button>
-                    <button type="button" onClick={() => applyPreset('cost_cut')} className="bg-rose-50 hover:bg-rose-100 text-rose-800 p-2.5 rounded-xl border border-rose-100">Kupunguza Gharama</button>
+                    <button type="button" onClick={() => applyPreset('growth')} className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 p-2.5 rounded-xl border border-emerald-100">Kukua kwa Kasi</button>
+                    <button type="button" onClick={() => applyPreset('cost_cut')} className="bg-rose-50 hover:bg-rose-100 text-rose-800 p-2.5 rounded-xl border border-rose-100">Punguza Gharama</button>
                     <button type="button" onClick={() => applyPreset('defensive')} className="bg-blue-50 hover:bg-blue-100 text-blue-800 p-2.5 rounded-xl border border-blue-100">Mkakati Salama</button>
-                    <button type="button" onClick={() => applyPreset('reset')} className="bg-slate-50 hover:bg-slate-100 text-slate-600 p-2.5 rounded-xl border border-slate-200">Weka Upya (Reset)</button>
+                    <button type="button" onClick={() => applyPreset('reset')} className="bg-slate-50 hover:bg-slate-100 text-slate-600 p-2.5 rounded-xl border border-slate-200">Weka Upya</button>
                   </div>
                 </div>
               </div>
 
-              {/* Simulated Live Outputs Column */}
               <div className="lg:col-span-2 space-y-6">
-                
-                {/* Dynamic Grid Results */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Simulated Revenue</span>
@@ -1131,7 +969,6 @@ export default function App() {
                       {simulatedRevenue >= baseRevenue ? '↑ Growth vs. Baseline' : '↓ Reduction vs. Baseline'}
                     </p>
                   </div>
-
                   <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Simulated Net Profit</span>
                     <h4 className="text-2xl font-black mt-1 text-[#0B192C]">{formatCurrency(simulatedProfit)}</h4>
@@ -1141,46 +978,37 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* AI Strategic Advice Report Output */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                   <div className="flex justify-between items-center border-b border-slate-100 pb-3 flex-wrap gap-2">
                     <h4 className="font-bold text-xs uppercase tracking-wider text-emerald-500">🤖 AI Decision Optimization</h4>
                     <div className="flex space-x-2 text-[10px] font-bold font-mono">
                       <span className="px-2 py-0.5 bg-slate-100 rounded">Uaminifu: {confidenceScore}%</span>
-                      <span className={`px-2 py-0.5 rounded ${riskIndex > 40 ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`}>Kiwango cha Hatari: {riskIndex}%</span>
+                      <span className={`px-2 py-0.5 rounded ${riskIndex > 40 ? 'bg-rose-50 text-rose-700' : 'bg-emerald-50 text-emerald-700'}`}>Hatari: {riskIndex}%</span>
                     </div>
                   </div>
-
                   <div>
                     <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Expected Business Impact:</span>
                     <p className="text-xs text-slate-700 leading-relaxed mt-1.5">
-                      {simulatedProfit < 0 
-                        ? "Mkakati huu unaingiza hasara! Ongezeko kubwa la wafanyakazi au kushuka kwa bei hakuna tija bila kuangalia upya kiwango cha COGS. Pendekezo: Ongeza ufanisi wa uzalishaji (Production) kwa +15% au punguza kasi ya kuajiri mara moja."
+                      {simulatedProfit < 0
+                        ? "Mkakati huu unaingiza hasara! Ongezeko kubwa la wafanyakazi au kushuka kwa bei hakuna tija bila kuangalia upya kiwango cha COGS."
                         : riskIndex > 45
-                        ? `Mkakati huu una hatari kubwa sana (Kiwango cha Hatari: ${riskIndex}%). Ingawa kuna faida inayokadiriwa, athari kwenye mzunguko wa fedha na uhifadhi wa wateja ni mkubwa sana.`
+                        ? `Mkakati huu una hatari kubwa (${riskIndex}%). Ingawa kuna faida inayokadiriwa, athari kwenye mzunguko wa fedha ni mkubwa.`
                         : simulatedProfit > baseProfit * 1.15
-                        ? `Mseto Bora! Mkakati huu unazalisha ziada ya faida ya ${formatCurrency(simulatedProfit - baseProfit)} kwa ufanisi wa asilimia 92. Huu ndio mwelekeo unaopendekezwa kwa robo hii ya mwaka.`
-                        : "Mfumo umejiweka sawa. Ili kuongeza mapato kwa ufanisi mkubwa zaidi, jaribu kuimarisha masoko (Marketing) kwa +30% huku ukipunguza bei kwa asilimia -5 tu."}
+                        ? `Mseto Bora! Mkakati huu unazalisha ziada ya faida ya ${formatCurrency(simulatedProfit - baseProfit)}. Huu ndio mwelekeo unaopendekezwa.`
+                        : "Mfumo umejiweka sawa. Ili kuongeza mapato, jaribu kuimarisha masoko kwa +30% huku ukipunguza bei kwa -5% tu."}
                     </p>
                   </div>
-
                   <div className="pt-2 border-t border-slate-100 flex justify-end">
-                    <button 
-                      type="button" 
-                      onClick={handleSaveScenario}
-                      className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-[#0B192C] font-extrabold rounded-xl text-xs transition shadow-md shadow-emerald-500/10"
-                    >
-                      Hifadhi Mkakati Huu (Save Scenario)
+                    <button type="button" onClick={handleSaveScenario} className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-[#0B192C] font-extrabold rounded-xl text-xs transition shadow-md shadow-emerald-500/10">
+                      Hifadhi Mkakati Huu
                     </button>
                   </div>
                 </div>
-
               </div>
             </div>
 
-            {/* List of Saved Scenarios (Scenario Matrix Comparison) */}
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-              <h4 className="font-bold text-sm text-[#0B192C] mb-4">Historia ya Mikakati Iliyohifadhiwa (Saved Scenarios)</h4>
+              <h4 className="font-bold text-sm text-[#0B192C] mb-4">Historia ya Mikakati Iliyohifadhiwa</h4>
               {savedScenarios.length === 0 ? (
                 <p className="text-xs text-slate-400">Hakuna mikakati iliyohifadhiwa bado.</p>
               ) : (
@@ -1189,12 +1017,12 @@ export default function App() {
                     <thead>
                       <tr className="bg-slate-50 text-slate-400 font-bold uppercase text-[9px] border-b border-slate-100">
                         <th className="p-3">Muda</th>
-                        <th className="p-3">Mabadiliko ya Bei</th>
-                        <th className="p-3">Marketing Adj</th>
-                        <th className="p-3">Ajira Mpya</th>
-                        <th className="p-3">Mapato ya Makadirio</th>
-                        <th className="p-3">Faida ya Makadirio</th>
-                        <th className="p-3">Kiwango cha Hatari</th>
+                        <th className="p-3">Bei</th>
+                        <th className="p-3">Marketing</th>
+                        <th className="p-3">Ajira</th>
+                        <th className="p-3">Mapato</th>
+                        <th className="p-3">Faida</th>
+                        <th className="p-3">Hatari</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
@@ -1218,37 +1046,29 @@ export default function App() {
                 </div>
               )}
             </div>
-
           </div>
         )}
 
-        {/* 9. AI ASSISTANT CHAT */}
+        {/* AI ASSISTANT */}
         {currentPage === 'AI Assistant' && (
           <div className="bg-white rounded-3xl border border-slate-100 p-6 flex flex-col h-[70vh] justify-between shadow-sm">
-            
-            {/* Interactive conversation history pane */}
             <div className="flex-1 overflow-y-auto space-y-4 pb-6 border-b border-slate-100 pr-2">
-              {chatHistory.map((chat, idx) => (
-                <div key={idx} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+              {chatHistory.map((chat, i) => (
+                <div key={i} className={`flex ${chat.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
                   <div className={`p-4 rounded-2xl text-xs leading-relaxed max-w-lg ${
-                    chat.sender === 'user' 
-                      ? 'bg-[#0B192C] text-white rounded-br-none' 
-                      : 'bg-slate-50 text-slate-700 border border-slate-100 rounded-bl-none'
+                    chat.sender === 'user' ? 'bg-[#0B192C] text-white rounded-br-none' : 'bg-slate-50 text-slate-700 border border-slate-100 rounded-bl-none'
                   }`}>
                     <p>{chat.text}</p>
-                    
-                    {/* Profit drop custom simulated graph inside assistant */}
                     {chat.hasChart && chat.chartType === 'profitDrop' && (
-                      <div className="mt-4 bg-white p-3 rounded-xl border border-slate-150 h-28 flex items-end justify-around">
+                      <div className="mt-4 bg-white p-3 rounded-xl border border-slate-200 h-28 flex items-end justify-around">
                         <div className="h-20 w-4 bg-emerald-500 rounded-t"></div>
                         <div className="h-16 w-4 bg-rose-400 rounded-t"></div>
                         <div className="h-12 w-4 bg-rose-500 rounded-t"></div>
-                        <span className="text-[9px] text-slate-400 font-mono mt-1">Chat Mwenendo</span>
+                        <span className="text-[9px] text-slate-400 font-mono mt-1">Mwenendo</span>
                       </div>
                     )}
-
                     {chat.hasChart && chat.chartType === 'bestCustomers' && (
-                      <div className="mt-4 bg-white p-3 rounded-xl border border-slate-150 h-28 flex items-end justify-between text-center text-[10px] font-bold text-slate-500">
+                      <div className="mt-4 bg-white p-3 rounded-xl border border-slate-200 h-28 flex items-end justify-between text-center text-[10px] font-bold text-slate-500">
                         <div><div className="h-20 w-10 bg-emerald-500 rounded-t mx-auto"></div>Madini (42%)</div>
                         <div><div className="h-14 w-10 bg-[#0B192C] rounded-t mx-auto"></div>Kilimo (30%)</div>
                         <div><div className="h-10 w-10 bg-slate-300 rounded-t mx-auto"></div>Mengine (28%)</div>
@@ -1258,37 +1078,21 @@ export default function App() {
                 </div>
               ))}
             </div>
-
-            {/* Chat prompt input desk */}
             <div className="pt-6 space-y-4">
               <div className="flex flex-wrap gap-2">
-                <button onClick={() => handleAiAsk("Uchambuzi wa mwenendo wa faida upoje?")} className="px-3 py-1.5 bg-slate-100 text-[10px] font-bold hover:bg-slate-200 rounded-lg transition text-slate-600">
-                  📈 Mwenendo wa Faida
-                </button>
-                <button onClick={() => handleAiAsk("Wateja gani wakubwa au sekta bora mwezi huu?")} className="px-3 py-1.5 bg-slate-100 text-[10px] font-bold hover:bg-slate-200 rounded-lg transition text-slate-600">
-                  👥 Sekta Kuu
-                </button>
-                <button onClick={() => handleAiAsk("Je mkakati wangu uliopo kwenye lab unafaa?")} className="px-3 py-1.5 bg-slate-100 text-[10px] font-bold hover:bg-slate-200 rounded-lg transition text-slate-600">
-                  ⚡ Mtihani wa Decision Lab
-                </button>
+                <button onClick={() => handleAiAsk("Uchambuzi wa mwenendo wa faida upoje?")} className="px-3 py-1.5 bg-slate-100 text-[10px] font-bold hover:bg-slate-200 rounded-lg transition text-slate-600">📈 Mwenendo wa Faida</button>
+                <button onClick={() => handleAiAsk("Wateja gani wakubwa au sekta bora mwezi huu?")} className="px-3 py-1.5 bg-slate-100 text-[10px] font-bold hover:bg-slate-200 rounded-lg transition text-slate-600">👥 Sekta Kuu</button>
+                <button onClick={() => handleAiAsk("Je mkakati wangu uliopo kwenye lab unafaa?")} className="px-3 py-1.5 bg-slate-100 text-[10px] font-bold hover:bg-slate-200 rounded-lg transition text-slate-600">⚡ Mtihani wa Decision Lab</button>
               </div>
-
               <div className="flex space-x-3">
-                <input 
-                  type="text" value={aiQuery} onChange={(e) => setAiQuery(e.target.value)}
-                  placeholder="Uliza maswali ya ziada kuhusu ANALYTIQ ya Zacharia..." 
-                  className="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50" 
-                />
-                <button onClick={() => handleAiAsk()} className="px-6 py-3 bg-[#0B192C] text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">
-                  Uliza AI
-                </button>
+                <input type="text" value={aiQuery} onChange={(e) => setAiQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && handleAiAsk()} placeholder="Uliza maswali ya ziada kuhusu ANALYTIQ..." className="flex-1 px-4 py-3 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50" />
+                <button onClick={() => handleAiAsk()} className="px-6 py-3 bg-[#0B192C] text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition">Uliza AI</button>
               </div>
             </div>
-
           </div>
         )}
 
-        {/* 10. NOTIFICATIONS PAGE */}
+        {/* NOTIFICATIONS */}
         {currentPage === 'Notifications' && (
           <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-6">
             <div className="flex justify-between items-center border-b border-slate-100 pb-4">
@@ -1298,15 +1102,12 @@ export default function App() {
               </div>
               <button onClick={markAllRead} className="text-xs text-emerald-500 font-bold hover:underline">Soma Zote</button>
             </div>
-
             {notifications.length === 0 ? (
               <p className="text-xs text-slate-400 text-center py-8">Huna arifa yoyote mpya kwa sasa.</p>
             ) : (
               <div className="space-y-4">
                 {notifications.map((n) => (
-                  <div key={n.id} className={`p-4 rounded-2xl border flex justify-between items-center transition ${
-                    !n.read ? 'bg-emerald-50/20 border-emerald-100' : 'bg-slate-50/50 border-slate-100'
-                  }`}>
+                  <div key={n.id} className={`p-4 rounded-2xl border flex justify-between items-center transition ${!n.read ? 'bg-emerald-50/20 border-emerald-100' : 'bg-slate-50/50 border-slate-100'}`}>
                     <div className="space-y-1">
                       <div className="flex items-center space-x-2">
                         <span className={`w-2 h-2 rounded-full ${!n.read ? 'bg-emerald-500' : 'bg-slate-300'}`}></span>
@@ -1316,12 +1117,7 @@ export default function App() {
                     </div>
                     <div className="flex items-center space-x-4">
                       <span className="text-[10px] text-slate-400 font-semibold">{n.date}</span>
-                      <button 
-                        onClick={() => handleDeleteNotification(n.id)}
-                        className="text-xs text-rose-600 hover:text-rose-800 font-bold"
-                      >
-                        Ondoa
-                      </button>
+                      <button onClick={() => handleDeleteNotification(n.id)} className="text-xs text-rose-600 hover:text-rose-800 font-bold">Ondoa</button>
                     </div>
                   </div>
                 ))}
@@ -1330,25 +1126,20 @@ export default function App() {
           </div>
         )}
 
-        {/* 11. REPORTS DESK */}
+        {/* REPORTS */}
         {currentPage === 'Reports' && (
           <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-6">
             <div>
               <h4 className="font-bold text-sm text-[#0B192C]">Export Report Desk</h4>
               <p className="text-xs text-slate-400 mt-0.5">Tengeneza na usafirishe faili safi za kiuchumi kwa uwasilishaji</p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { type: 'pdf', title: 'Hamisha kama PDF safi', desc: 'Notion-style executive layout kwa ma-CEO', icon: '📄' },
-                { type: 'excel', title: 'Hamisha kama Excel Sheet', desc: 'Takwimu zote za uendeshaji mwezi baada ya mwezi', icon: '📊' },
-                { type: 'ppt', title: 'Hamisha kama Powerpoint', desc: 'Slides za maandalizi ya bodi ya wakurugenzi', icon: '📈' }
+                { type: 'pdf', title: 'Hamisha kama PDF safi', desc: 'Executive layout kwa ma-CEO', icon: '📄' },
+                { type: 'excel', title: 'Hamisha kama Excel Sheet', desc: 'Takwimu zote za uendeshaji', icon: '📊' },
+                { type: 'ppt', title: 'Hamisha kama Powerpoint', desc: 'Slides za bodi ya wakurugenzi', icon: '📈' }
               ].map((r, i) => (
-                <div 
-                  key={i} 
-                  onClick={() => triggerToast(`Report ya ${r.type.toUpperCase()} imeandaliwa kwa usafirishaji.`)}
-                  className="border border-slate-100 p-6 rounded-2xl hover:border-emerald-500 cursor-pointer transition text-center space-y-3 bg-slate-50/30"
-                >
+                <div key={i} onClick={() => triggerToast(`Report ya ${r.type.toUpperCase()} imeandaliwa kwa usafirishaji.`)} className="border border-slate-100 p-6 rounded-2xl hover:border-emerald-500 cursor-pointer transition text-center space-y-3 bg-slate-50/30">
                   <span className="text-3xl inline-block">{r.icon}</span>
                   <h5 className="font-bold text-xs text-[#0B192C]">{r.title}</h5>
                   <p className="text-[11px] text-slate-400 leading-relaxed">{r.desc}</p>
@@ -1358,33 +1149,23 @@ export default function App() {
           </div>
         )}
 
-        {/* 12. SETTINGS PAGE */}
+        {/* SETTINGS */}
         {currentPage === 'Settings' && (
           <div className="bg-white rounded-3xl border border-slate-100 p-6 shadow-sm space-y-8">
             <div className="border-b border-slate-100 pb-4">
               <h4 className="font-bold text-sm text-[#0B192C]">Global Enterprise Configurations</h4>
               <p className="text-xs text-slate-400 mt-0.5">Mipangilio ya kiufundi, data gateway na taarifa za kibiashara</p>
             </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div className="space-y-4">
                 <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Taarifa za Mtendaji</h5>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Jina la Mtumiaji (Full Name)</label>
-                  <input 
-                    type="text" 
-                    value={userName} 
-                    onChange={(e) => setUserName(e.target.value)} 
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-xs" 
-                  />
+                  <label className="text-xs font-semibold text-slate-600">Jina la Mtumiaji</label>
+                  <input type="text" value={userName} onChange={(e) => setUserName(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-xs" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-600">Cheo (User Role)</label>
-                  <select 
-                    value={userRole} 
-                    onChange={(e) => setUserRole(e.target.value as UserRole)} 
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-white text-xs"
-                  >
+                  <select value={userRole} onChange={(e) => setUserRole(e.target.value as UserRole)} className="w-full px-4 py-2.5 border border-slate-200 rounded-xl bg-white text-xs">
                     <option value="CEO">CEO</option>
                     <option value="Executive Director">Executive Director</option>
                     <option value="Finance Director">Finance Director</option>
@@ -1392,17 +1173,11 @@ export default function App() {
                   </select>
                 </div>
               </div>
-
               <div className="space-y-4">
                 <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400">Taarifa za Taasisi</h5>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-600">Jina la Kampuni (Enterprise Name)</label>
-                  <input 
-                    type="text" 
-                    value={companyName} 
-                    onChange={(e) => setCompanyName(e.target.value)} 
-                    className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-xs" 
-                  />
+                  <label className="text-xs font-semibold text-slate-600">Jina la Kampuni</label>
+                  <input type="text" value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full px-4 py-2.5 border border-slate-200 rounded-xl text-xs" />
                 </div>
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-600">Active Database Sync Server</label>
@@ -1410,12 +1185,8 @@ export default function App() {
                 </div>
               </div>
             </div>
-
-            <button 
-              onClick={() => triggerToast('Mabadiliko ya mfumo yamehifadhiwa salama kwenye PostgreSQL')}
-              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-[#0B192C] rounded-xl text-xs font-bold tracking-wide transition"
-            >
-              Hifadhi Mabadiliko (Save Changes)
+            <button onClick={() => triggerToast('Mabadiliko ya mfumo yamehifadhiwa salama kwenye PostgreSQL')} className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 text-[#0B192C] rounded-xl text-xs font-bold tracking-wide transition">
+              Hifadhi Mabadiliko
             </button>
           </div>
         )}
