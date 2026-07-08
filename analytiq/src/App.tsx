@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react'
 
 type Page = 
   | 'Dashboard' 
@@ -153,7 +153,6 @@ const Icons = {
 };
 
 export default function App() {
-  const { user } = useAuth();
   const [userName, setUserName] = useState<string>('Zacharia M.');
   const [userRole, setUserRole] = useState<UserRole>('CEO');
   const [companyName, setCompanyName] = useState<string>('Analytiq Global E.A');
